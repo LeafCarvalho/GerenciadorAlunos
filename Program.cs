@@ -13,7 +13,11 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.MapOpenApi("/swagger/alunos.json");
+    app.UseSwaggerUi(options =>
+    {
+        options.DocumentPath = "/swagger/alunos.json";
+    });
 }
 
 app.UseHttpsRedirection();
