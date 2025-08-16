@@ -1,0 +1,37 @@
+cat > .gitignore << 'EOF'
+# Build/output
+**/bin/
+**/obj/
+artifacts/
+TestResults/
+*.trx
+
+# IDEs
+.vs/
+.idea/
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.csproj.user
+
+# Cobertura
+coverage/
+*.coverage
+*.coveragexml
+
+# Pacotes (se usar pasta local de packages)
+packages/
+
+# Logs
+*.log
+
+# SO
+.DS_Store
+Thumbs.db
+
+# Configs locais/segredos
+*.env
+appsettings.*.local.json
+EOF
