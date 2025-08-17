@@ -1,3 +1,4 @@
+using GerenciadorAlunos.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace GerenciadorAlunos.Data
@@ -9,6 +10,12 @@ namespace GerenciadorAlunos.Data
         {
         }
 
-    
+        public DbSet<Aluno> Alunos => Set<Aluno>();
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfiguration(new AlunoConfiguration());
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }
