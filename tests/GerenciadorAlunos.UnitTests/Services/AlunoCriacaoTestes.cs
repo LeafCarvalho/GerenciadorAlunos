@@ -1,7 +1,10 @@
 using Xunit;
 using FluentAssertions;
+using GerenciadorAlunos.Domain.Services;
+using GerenciadorAlunos.UnitTests._Fakes;
+using GerenciadorAlunos.Domain.Contracts;
 
-namespace GerenciadorAlunos.UnitTests;
+namespace GerenciadorAlunos.UnitTests.Services;
 
 public class AlunoCriacaoTestes
 {
@@ -9,7 +12,7 @@ public class AlunoCriacaoTestes
     public void CreateStudent_returns_error_when_name_is_missing()
     {
         var svc = new StudentService(new FakePasswordHasher());
-        var input = new CreateStudentInput(name: "", email: "ana@mail.com", phone: null, password: "Secr3t!");
+        var input = new CreateStudentInput(Name: "", Email: "ana@mail.com", Phone: null, Password: "Secr3t!");
 
         var result = svc.Validate(input);
 
@@ -21,7 +24,7 @@ public class AlunoCriacaoTestes
     public void CreateStudent_returns_error_when_email_is_missing()
     {
         var svc = new StudentService(new FakePasswordHasher());
-        var input = new CreateStudentInput(name: "Ana", email: "", phone: null, password: "Secr3t!");
+        var input = new CreateStudentInput(Name: "Ana", Email: "", Phone: null, Password: "Secr3t!");
 
         var result = svc.Validate(input);
 
@@ -52,7 +55,7 @@ public class AlunoCriacaoTestes
 
         result.IsValid.Should().BeTrue();
 
-        var ok = hasher.Verify(result.Value.PasswordHash, "Secr3t!");
+        var ok = hasher.Verify(result.Value!.PasswordHash, "Secr3t!");
         ok.Should().BeTrue();
     }
 }
@@ -80,7 +83,7 @@ public class StudentCreationTests
         var result = svc.Validate(input);
 
         result.IsValid.Should().BeTrue();
-        result.Value.Email.Should().Be("ana@mail.com");
+        result.Value!.Email.Should().Be("ana@mail.com");
         result.Value.PasswordHash.Should().NotBeNullOrWhiteSpace();
         result.Value.PasswordHash.Should().NotBe("Secr3t!");
         result.Value.PasswordHash.Should().StartWith("HASH(");
@@ -96,6 +99,6 @@ public class StudentCreationTests
         var result = svc.Validate(input);
 
         result.IsValid.Should().BeTrue();
-        hasher.Verify(result.Value.PasswordHash, "Secr3t!").Should().BeTrue();
+        hasher.Verify(result.Value!.PasswordHash, "Secr3t!").Should().BeTrue();
     }
 }
