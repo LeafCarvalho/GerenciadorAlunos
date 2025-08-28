@@ -1,3 +1,9 @@
 namespace GerenciadorAlunos.Domain.Contracts;
 
-public record CreateStudentInput(string Name, string Email, string? Phone, string Password);
+public sealed record CreateStudentInput
+{
+    public required string Name  { get; init; }
+    public required string Email { get; init; }
+    public string? Phone         { get; init; }
+    public required string Password { get; init; }
+}

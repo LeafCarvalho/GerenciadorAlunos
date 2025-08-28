@@ -3,54 +3,65 @@ using GerenciadorAlunos.Domain.Contracts;
 
 namespace GerenciadorAlunos.Domain.Services;
 
-public sealed class StudentService
+public sealed partial class StudentService
 {
     private readonly IPasswordHasher _hasher;
 
-    private static readonly Regex EmailRegex =
-        new(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    [GeneratedRegex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", RegexOptions.IgnoreCase)]
+    private static partial Regex EmailRegex();
+
+    private const string MSG_NOME_OBRIGATORIO   = "O campo nome é de preenchimento obrigatório.";
+    private const string MSG_EMAIL_OBRIGATORIO  = "O campo email é de preenchimento obrigatório.";
+    private const string MSG_EMAIL_INVALIDO     = "Email em um formato inválido.";
+    private const string MSG_SENHA_OBRIGATORIA  = "O campo senha é de preenchimento obrigatório.";
 
     public StudentService(IPasswordHasher hasher) => _hasher = hasher;
 
     public ValidationResult<CreatedStudent> Validate(CreateStudentInput input)
     {
-        var errors = new List<string>();
+        var errors   = new List<string>();
+        var name     = Normalize(input.Name);
+        var emailRaw = Normalize(input.Email);
+        var password = Normalize(input.Password);
 
-        var name     = (input.Name ?? string.Empty).Trim();
-        var emailRaw = (input.Email ?? string.Empty).Trim();
-        var password = (input.Password ?? string.Empty).Trim();
-
-        if (string.IsNullOrWhiteSpace(name))
-            errors.Add("O campo nome é de preenchimento obrigatório.");
-
-        if (string.IsNullOrWhiteSpace(emailRaw))
-            errors.Add("O campo email é de preenchimento obrigatório.");
-        else if (!EmailRegex.IsMatch(emailRaw))
-            errors.Add("Email em um formato inválido.");
-
-        if (string.IsNullOrWhiteSpace(password))
-            errors.Add("O campo senha é de preenchimento obrigatório.");
+        ValidarNome(name, errors);
+        ValidarEmail(emailRaw, errors);
+        ValidarSenha(password, errors);
 
         if (errors.Count > 0)
-        {
-            var invalid = new ValidationResult<CreatedStudent> { IsValid = false };
-            invalid.Errors.AddRange(errors);
-            return invalid;
-        }
+            return ValidationResult<CreatedStudent>.Falha(errors);
 
         var emailNormalized = emailRaw.ToLowerInvariant();
         var passwordHash    = _hasher.Hash(password);
 
-        var created = new CreatedStudent
-        {
-            Email        = emailNormalized,
-            PasswordHash = passwordHash
-        };
+        var created = new CreatedStudent(emailNormalized, passwordHash);
 
-        return new ValidationResult<CreatedStudent>
+        return ValidationResult<CreatedStudent>.Ok(created);
+    }
+
+    private static string Normalize(string? s) => (s ?? string.Empty).Trim();
+
+    private static void ValidarNome(string name, List<string> errors)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            errors.Add(MSG_NOME_OBRIGATORIO);
+    }
+
+    private static void ValidarEmail(string emailRaw, List<string> errors)
+    {
+        if (string.IsNullOrWhiteSpace(emailRaw))
         {
-            IsValid = true,
-            Value   = created
-        };
+            errors.Add(MSG_EMAIL_OBRIGATORIO);
+            return;
+        }
+
+        if (!EmailRegex().IsMatch(emailRaw))
+            errors.Add(MSG_EMAIL_INVALIDO);
+    }
+
+    private static void ValidarSenha(string password, List<string> errors)
+    {
+        if (string.IsNullOrWhiteSpace(password))
+            errors.Add(MSG_SENHA_OBRIGATORIA);
     }
 }
