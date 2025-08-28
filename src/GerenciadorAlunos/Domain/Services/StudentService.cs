@@ -32,11 +32,7 @@ public sealed class StudentService
             errors.Add("O campo senha é de preenchimento obrigatório.");
 
         if (errors.Count > 0)
-        {
-            var invalid = new ValidationResult<CreatedStudent> { IsValid = false };
-            invalid.Errors.AddRange(errors);
-            return invalid;
-        }
+            return ValidationResult<CreatedStudent>.Falha(errors);
 
         var emailNormalized = emailRaw.ToLowerInvariant();
         var passwordHash    = _hasher.Hash(password);
@@ -47,10 +43,6 @@ public sealed class StudentService
             PasswordHash = passwordHash
         };
 
-        return new ValidationResult<CreatedStudent>
-        {
-            IsValid = true,
-            Value   = created
-        };
+        return ValidationResult<CreatedStudent>.Ok(created);
     }
 }
