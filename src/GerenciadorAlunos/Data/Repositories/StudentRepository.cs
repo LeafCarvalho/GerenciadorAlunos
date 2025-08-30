@@ -30,4 +30,21 @@ public sealed class StudentRepository : IStudentRepository
 
         return entity.Id;
     }
+
+    public async Task<IReadOnlyList<(Guid Id, string Name, string Email)>> GetAllAsync(CancellationToken ct)
+    {
+        return await _db.Alunos
+            .AsNoTracking()
+            .Select(a => new ValueTuple<Guid, string, string>(a.Id, a.Name, a.Email))
+            .ToListAsync(ct);
+    }
+
+    public async Task<(Guid Id, string Name, string Email, string? Phone)?> GetByIdAsync(Guid id, CancellationToken ct)
+    {
+        return await _db.Alunos
+            .AsNoTracking()
+            .Where(a => a.Id == id)
+            .Select(a => new ValueTuple<Guid, string, string, string?>(a.Id, a.Name, a.Email, a.Phone))
+            .FirstOrDefaultAsync(ct);
+    }
 }
