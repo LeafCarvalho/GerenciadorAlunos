@@ -26,6 +26,12 @@ public sealed class CreateStudentUseCaseTests
             UltimoSalvo = (name, email, phone, passwordHash);
             return Task.FromResult(IdParaRetornar);
         }
+
+        public Task<IReadOnlyList<(Guid Id, string Name, string Email)>> GetAllAsync(CancellationToken ct)
+        => Task.FromResult<IReadOnlyList<(Guid, string, string)>>(Array.Empty<(Guid, string, string)>());
+
+        public Task<(Guid Id, string Name, string Email, string? Phone)?> GetByIdAsync(Guid id, CancellationToken ct)
+            => Task.FromResult<(Guid, string, string, string?)?>(null);
     }
 
     private static CreateStudentInput Input(string name, string email, string? phone, string password)
