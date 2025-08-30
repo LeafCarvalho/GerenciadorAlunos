@@ -1,5 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using GerenciadorAlunos.Data;
+using GerenciadorAlunos.Domain.Contracts;
+using GerenciadorAlunos.Domain.Services;
+using GerenciadorAlunos.Application.UseCases;
+using GerenciadorAlunos.Data.Repositories;
+using GerenciadorAlunos.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +13,11 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreConnection")));
+
+builder.Services.AddSingleton<IPasswordHasher, BCryptPasswordHasher>();
+builder.Services.AddScoped<StudentService>();
+builder.Services.AddScoped<CreateStudentUseCase>();
+builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 
 var app = builder.Build();
 
