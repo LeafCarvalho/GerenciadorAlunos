@@ -70,4 +70,15 @@ public sealed class AlunosController : ControllerBase
 
         return Ok(response);
     }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> DeleteById(Guid id, CancellationToken ct)
+    {
+        var wasDeleted = await _repo.DeleteById(id, ct);
+
+        if (!wasDeleted)
+            return NotFound();
+
+        return NoContent();
+    }
 }

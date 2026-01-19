@@ -47,4 +47,13 @@ public sealed class StudentRepository : IStudentRepository
             .Select(a => new ValueTuple<Guid, string, string, string?>(a.Id, a.Name, a.Email, a.Phone))
             .FirstOrDefaultAsync(ct);
     }
+
+    public async Task<bool> DeleteById(Guid id, CancellationToken ct = default)
+    {
+        var alunoDeleted = await _db.Alunos
+            .Where(a => a.Id == id)
+            .ExecuteDeleteAsync(ct);
+
+        return alunoDeleted > 0;
+    }
 }
